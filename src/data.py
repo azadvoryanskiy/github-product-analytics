@@ -62,9 +62,12 @@ def events(con: duckdb.DuckDBPyConnection, pattern: str = "events_*.parquet",
     if window:
         where = (f" WHERE created_at::DATE BETWEEN DATE '{window[0]}'"
                  f" AND DATE '{window[1]}'")
+    # union_by_name keeps a day extracted under an older column set from
+    # failing the whole glob: the columns it lacks come back NULL instead.
+    # Sampled days outside the analysis window are deliberately left that way.
     con.execute(
         f"CREATE OR REPLACE VIEW {view} AS "
-        f"SELECT * FROM read_parquet({paths}){where}"
+        f"SELECT * FROM read_parquet({paths}, union_by_name=true){where}"
     )
     return con
 
