@@ -1,0 +1,10 @@
+# Data is never committed. See README for how to fetch it.
+data/
+*.duckdb
+*.duckdb.wal
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
