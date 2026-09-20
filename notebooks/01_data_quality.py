@@ -113,8 +113,8 @@ ax.annotate("24 May 2025", xy=(pd.Timestamp("2025-05-24"), 5.9),
             color=charts.CRITICAL, fontsize=10, va="top")
 ax.set_ylabel("events per day, millions")
 ax.set_ylim(0, 6.5)
-charts.finish(ax, "Activity fell by a third in one night",
-              "and stayed there for the next three months")
+charts.finish(ax, "Published activity fell 34% overnight and stayed down",
+              "Events per day. The fall lands between Friday 23 and Saturday 24 May 2025.")
 charts.save(fig, "01_daily_events")
 fig
 
@@ -180,8 +180,8 @@ ax.set_ylabel("events per hour, thousands")
 ax.set_ylim(0, 300)
 ax.set_xticks(range(0, 24, 3))
 ax.legend(loc="lower right")
-charts.finish(ax, "After 24 May, no hour of any day goes above ~169,000 events",
-              "the busy hours are clipped hardest, so the daily rhythm flattens")
+charts.finish(ax, "Every hour was clipped, the busiest hours hardest",
+              "Average events per hour, two weekday-matched fortnights either side of 24 May.")
 charts.save(fig, "02_hourly_ceiling")
 fig
 
@@ -250,8 +250,8 @@ ax.set_yticklabels(labels, fontsize=9.5, color=charts.INK_SOFT)
 ax.invert_yaxis()
 ax.set_xlim(0, 72)
 ax.set_xlabel("share of all events, %")
-charts.finish(ax, "37.5% of the activity is not a person typing",
-              "the [bot] rule on its own accounts for 25.3 of those points")
+charts.finish(ax, "37.5% of events are automation, not people",
+              "Filtering on logins that end in [bot] catches 25.3 of those 37.5 points.")
 charts.save(fig, "03_composition")
 fig
 
@@ -319,8 +319,8 @@ ax.set_yticklabels([lbl.split("\n")[0] for lbl in labels], color=charts.INK_SOFT
 ax.invert_yaxis()
 ax.set_xlabel("accounts no longer on GitHub, % (95% confidence interval)")
 ax.set_xlim(0, 40)
-charts.finish(ax, "GitHub deletes the accounts my rules flag",
-              "8 to 12 times more often than ordinary accounts")
+charts.finish(ax, "GitHub removes the flagged accounts far more often",
+              "Share of 150 sampled accounts per rule that no longer exist, with 95% intervals.")
 charts.save(fig, "04_deletion_rates")
 fig
 
