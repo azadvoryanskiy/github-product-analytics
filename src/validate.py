@@ -24,6 +24,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from bots import ACCOUNT_DAYS, KIND  # noqa: E402
 from data import connect  # noqa: E402
 
 OUT = Path(__file__).resolve().parent.parent / "data" / "processed" / "validation.parquet"
@@ -52,9 +53,10 @@ def look_up(actor_id: int) -> dict:
 
 def main(per_rule: int = 150) -> None:
     con = connect()
-    con.execute(
-        "CREATE VIEW c AS SELECT * FROM read_parquet('data/processed/classified.parquet')"
-    )
+    con.execute(f"""
+        CREATE VIEW c AS SELECT *, {KIND} AS kind
+        FROM read_parquet('{ACCOUNT_DAYS}/*.parquet')
+    """)
     sample = con.sql(f"""
         SELECT kind, actor_id, any_value(login) AS login, sum(events) AS events
         FROM c GROUP BY kind, actor_id

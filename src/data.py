@@ -9,6 +9,17 @@ import duckdb
 
 RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 
+# The analysis window, fixed here so every script and notebook counts the same
+# days. It is one unbroken run. Sampled days outside it — one per year back to
+# 2015, one Wednesday a month into 2026 — exist in data/raw for the long-range
+# charts and must not leak into the main figures, which is what `window` is for.
+WINDOW_START, WINDOW_END = "2025-04-21", "2025-09-05"
+
+# Everything from 26 May 2025 is after the rate cap. The case studies that need
+# a cohort and a follow-up start here; only the data-quality one crosses the cap,
+# because the cap is its subject.
+POST_CAP_START = "2025-05-26"
+
 
 def connect() -> duckdb.DuckDBPyConnection:
     """A DuckDB connection that reports timestamps in UTC.
@@ -22,6 +33,11 @@ def connect() -> duckdb.DuckDBPyConnection:
     """
     con = duckdb.connect()
     con.execute("SET TimeZone='UTC'")
+    # This laptop has little free disk, and DuckDB spills to it. Capping memory
+    # and dropping the ordering guarantee keeps a wide GROUP BY from filling the
+    # drive; nothing here depends on row order.
+    con.execute("SET memory_limit='4GB'")
+    con.execute("SET preserve_insertion_order=false")
     return con
 
 
@@ -31,12 +47,25 @@ def days(pattern: str = "events_*.parquet") -> list[str]:
 
 
 def events(con: duckdb.DuckDBPyConnection, pattern: str = "events_*.parquet",
-           view: str = "ev") -> duckdb.DuckDBPyConnection:
-    """Register the matching days as a view."""
+           view: str = "ev", window: tuple[str, str] | None = None
+           ) -> duckdb.DuckDBPyConnection:
+    """Register the matching days as a view.
+
+    `window` clips to a date range. Pass it whenever the figure should cover the
+    analysis window rather than every day that happens to be extracted — a glob
+    alone would quietly pull in the sampled days and draw them as a broken line.
+    """
     paths = days(pattern)
     if not paths:
         raise FileNotFoundError(f"no extracted days match {pattern} in {RAW_DIR}")
-    con.execute(f"CREATE OR REPLACE VIEW {view} AS SELECT * FROM read_parquet({paths})")
+    where = ""
+    if window:
+        where = (f" WHERE created_at::DATE BETWEEN DATE '{window[0]}'"
+                 f" AND DATE '{window[1]}'")
+    con.execute(
+        f"CREATE OR REPLACE VIEW {view} AS "
+        f"SELECT * FROM read_parquet({paths}){where}"
+    )
     return con
 
 
