@@ -10,11 +10,11 @@ simulation or a stand-in from another industry.
 
 The three case studies share one data model, built once:
 
-| | Question | Write-up |
-|---|---|---|
-| 1 | How much of this activity is not human, and what does removing it do to the numbers? | `docs/01-bots.md` |
-| 2 | What happens in a new account's first days, and who comes back? | `docs/02-activation.md` |
-| 3 | Which features do the teams that stay on the product use? | `docs/03-features.md` |
+| | Question | Page | Write-up |
+|---|---|---|---|
+| 1 | Activity fell a third overnight — did users leave? | [read it](https://azadvoryanskiy.github.io/github-product-analytics/) | [`docs/01-data-quality.md`](docs/01-data-quality.md) |
+| 2 | What happens in a new account's first days, and who comes back? | in progress | `docs/02-activation.md` |
+| 3 | Which features do the teams that stay on the product use? | in progress | `docs/03-features.md` |
 
 Start with [`docs/data_notes.md`](docs/data_notes.md): what one row is, what the
 data can answer, and what it cannot.
@@ -40,10 +40,14 @@ The days each case study uses are listed at the top of its write-up.
 ## Layout
 
 ```
-src/extract.py     download GH Archive, write one Parquet file per day
-src/              analysis code shared by the notebooks
+src/extract.py    download GH Archive, write one Parquet file per day
+src/bots.py       the automation rules
+src/validate.py   check those rules against the GitHub API
+src/figures.py    the charts, in a light and a dark theme
 notebooks/        the analyses, as jupytext .py plus executed .ipynb
-docs/             data notes and the three write-ups
-dashboard/        static dashboard
+docs/             the published page, the write-ups and the data notes
 data/             gitignored
 ```
+
+`docs/` is what GitHub Pages serves, so the published page and the write-ups it
+links to sit in the same place.

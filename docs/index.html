@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Before you trust a number · GitHub product analytics</title>
+<meta name="description" content="GitHub's public activity fell a third overnight in May 2025. It was not users. A data-quality case study on 560 million real events.">
+<meta name="theme-color" content="#09090b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff6a3d'/%3E%3Ctext x='32' y='42' font-family='system-ui,sans-serif' font-size='27' font-weight='800' fill='%23140a06' text-anchor='middle'%3EAZ%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  color-scheme: dark;
+  --bg:#09090b; --card:#141417; --line:rgba(255,255,255,.08);
+  --ink:#f5f5f4; --ink-2:#a1a1aa; --muted:#71717a;
+  --accent:#ff6a3d; --radius:22px;
+  --head:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(900px 520px at 85% -8%,rgba(255,106,61,.16),transparent 60%),
+             radial-gradient(700px 480px at -10% 30%,rgba(91,156,240,.08),transparent 60%),
+             linear-gradient(var(--bg),var(--bg));}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{display:flex;gap:14px;align-items:center;padding:26px 0 8px;font-size:14px;color:var(--muted)}
+nav a{color:var(--ink-2)}
+h1{font:700 clamp(28px,5vw,44px)/1.12 var(--head);margin:18px 0 14px;letter-spacing:-.02em}
+h2{font:600 clamp(20px,3vw,26px)/1.25 var(--head);margin:0 0 10px;letter-spacing:-.01em}
+.eyebrow{font:600 12px/1 var(--head);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:19px;color:var(--ink-2);margin:0 0 28px}
+.lede strong{color:var(--ink)}
+
+.answer{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;margin:0 0 22px}
+.answer h2{font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.answer ol{margin:0;padding-left:22px}
+.answer li{margin:0 0 12px;font-size:17px}
+.answer li:last-child{margin-bottom:0}
+.answer li b{color:var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 44px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat .n{font:700 clamp(22px,3.4vw,30px)/1.1 var(--head);letter-spacing:-.02em}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+section{margin:0 0 44px}
+section .num{font:600 13px/1 var(--head);color:var(--accent);letter-spacing:.08em;margin-bottom:8px}
+section p{margin:0 0 14px;color:var(--ink-2)}
+section p strong{color:var(--ink);font-weight:600}
+figure{margin:20px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 6px}
+figure img{width:100%;height:auto;display:block;border-radius:8px}
+figcaption{font-size:13.5px;color:var(--muted);padding:12px 4px 10px}
+
+.callout{background:linear-gradient(180deg,rgba(255,106,61,.10),rgba(255,106,61,.03));
+  border:1px solid rgba(255,106,61,.28);border-radius:var(--radius);padding:24px 26px}
+.callout h2{color:var(--ink)}
+.callout ul{margin:10px 0 0;padding-left:20px}
+.callout li{margin:0 0 12px;color:var(--ink-2)}
+.callout li:last-child{margin-bottom:0}
+.callout li b{color:var(--ink)}
+
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:34px}
+.meta div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.meta h3{font:600 13px/1 var(--head);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.meta p,.meta li{font-size:14.5px;color:var(--ink-2);margin:0 0 8px}
+.meta ul{margin:0;padding-left:18px}
+footer{color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);margin-top:40px;padding-top:20px}
+
+@media (max-width:640px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .meta{grid-template-columns:1fr}
+  figure{padding:12px 12px 2px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <a href="https://azadvoryanskiy.github.io">← Portfolio</a>
+  <span>·</span>
+  <a href="https://github.com/azadvoryanskiy/github-product-analytics">Repository</a>
+</nav>
+
+<p class="eyebrow">Data quality · GitHub public events</p>
+<h1>A third of the activity vanished overnight. Did users leave?</h1>
+<p class="lede"><strong>No. Nothing happened to users.</strong> The pipeline started
+throttling — and a third of what was still arriving had never been human in the
+first place.</p>
+
+<div class="answer">
+  <h2>The answer in three lines</h2>
+  <ol>
+    <li>The 34% fall on 24 May 2025 was a <b>rate cap on the data feed</b>, not a
+        change in behaviour. It hit every event type and every kind of account by
+        the same third, and no hour of any day since has gone above ~169,000 events.</li>
+    <li>The cap is not a random sample. It keeps <b>58% of the busiest hour and 75%
+        of the quietest</b>, so the data under-represents exactly the most active users.</li>
+    <li>Of the events that do arrive, <b>37.5% are automation</b> — and the filter
+        everyone uses, "login ends in <code>[bot]</code>", finds only 25.3 of those
+        37.5 points.</li>
+  </ol>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="n">560M</div><div class="l">events analysed, 138 consecutive days</div></div>
+  <div class="stat"><div class="n">47</div><div class="l">bad rows the standard checklist found, in 108M</div></div>
+  <div class="stat"><div class="n">37.5%</div><div class="l">of activity is automation, not people</div></div>
+  <div class="stat"><div class="n">8–12×</div><div class="l">more often GitHub deletes the accounts my rules flag</div></div>
+</div>
+
+<section>
+  <div class="num">FIRST</div>
+  <h2>The standard checklist passes, and proves nothing</h2>
+  <p>Duplicates, missing values, broken types — run on 108 million rows from June
+  2025, it returns <strong>47 duplicated rows and nothing missing</strong>. That is
+  0.00004%.</p>
+  <p>If cleaning stopped there, the conclusion would be "the data is clean". The
+  checklist tests whether the data is <strong>well-formed</strong>. It says nothing
+  about whether it is <strong>true</strong>.</p>
+</section>
+
+<section>
+  <div class="num">01</div>
+  <h2>Users do not leave in unison</h2>
+  <p>Before 24 May the line has a shape: weekdays at 5.5–5.8M, weekends lower. That
+  is a human rhythm. Then it falls 34% between a Friday and a Saturday and runs flat
+  for three months. <strong>Users do not leave overnight and in unison.</strong></p>
+  <figure>
+    <img src="img/dark/01_daily_events.png" alt="Events published per day from April to September 2025, with a sharp permanent drop on 24 May">
+    <figcaption>Events GitHub published each day, 21 April – 5 September 2025.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="num">02</div>
+  <h2>It is a lid, not a decline</h2>
+  <p>Every event type fell by the same third — pushes −34.7%, pull requests −31.1%,
+  stars −35.4%, issues −35.7%. So did every kind of account. A real change in how
+  people work does not move code review and stars by the same number.</p>
+  <p>The hour-of-day view shows why: the shape of the day flattens against a lid.
+  Peak-to-trough was 1.49× before and 1.17× after. <strong>Anyone measuring when
+  peak load happens would now get a 22% different answer</strong>, with nothing about
+  users having changed.</p>
+  <figure>
+    <img src="img/dark/02_hourly_ceiling.png" alt="Average events per hour of day before and after the cap; the later line is flatter and lower">
+    <figcaption>Two weekday-matched fortnights either side of 24 May 2025.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="num">03</div>
+  <h2>The standard bot filter finds two thirds</h2>
+  <p>Three rules, each catching what the previous one misses: accounts GitHub itself
+  marks as bots; accounts active 20+ hours a day; accounts doing hundreds of events
+  of one type into one or two repositories. The volume floor sits far above people —
+  the median account produces 2 events a day.</p>
+  <p><strong>The standard filter finds two thirds of the problem.</strong> The rest
+  are ordinary user accounts running scripts, which GitHub has no reason to mark.
+  One of them, <code>freefastconnect</code>, pushed to a single repository 1.8
+  million times across 114 days.</p>
+  <figure>
+    <img src="img/dark/03_composition.png" alt="Bar chart: people 62.5%, declared bots 25.3%, round the clock 10.4%, one target one action 1.7%">
+    <figcaption>Share of all events by kind of account, 138 days.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="num">04</div>
+  <h2>Checking the rule against GitHub itself</h2>
+  <p>The API cannot confirm these are bots — it reports <code>"type": "User"</code>,
+  which is correct. So the check had to come from elsewhere: does GitHub eventually
+  remove them? I sampled 150 accounts per rule and asked.</p>
+  <p><strong>Flagged accounts are 8 to 12 times more likely to be gone</strong>
+  (Fisher exact, p = 1.4 × 10⁻⁵ and 3.9 × 10⁻⁹). That is corroboration, not proof —
+  but it rules out the rules firing at random.</p>
+  <figure>
+    <img src="img/dark/04_deletion_rates.png" alt="Deletion rates with confidence intervals: people 2.7%, declared bots 3.3%, round the clock 17.4%, one target one action 25.2%">
+    <figcaption>Share of sampled accounts that no longer exist, with 95% intervals.</figcaption>
+  </figure>
+</section>
+
+<section class="callout">
+  <h2>What I would change</h2>
+  <ul>
+    <li><b>Check the pipe before explaining the number.</b> A 34% drop should trigger
+    one query — events per hour — before anyone writes a sentence about user
+    behaviour. Cheap enough to run as an alert on any metric moving more than 15% in
+    a day.</li>
+    <li><b>Report automation next to the metric, not instead of it.</b> On a
+    developer platform the automation <em>is</em> part of the product. The mistake is
+    letting it sit inside "active users" unlabelled.</li>
+    <li><b>Do not trust <code>[bot]</code> alone</b>, and re-run the behavioural rules
+    quarterly — the biggest undeclared account here did not exist two years ago.</li>
+    <li><b>Key on the immutable id.</b> Over 138 days, 2,289 logins were used by more
+    than one account and 119,857 accounts changed their login.</li>
+  </ul>
+  <p style="margin:16px 0 0;color:var(--ink-2)"><b style="color:var(--ink)">How I would
+  know it worked:</b> take the ten metrics on the main dashboard, compute the
+  automation share and the completeness check across two years of history, and count
+  how many past decisions would have gone differently. That is the number to put in
+  front of the team.</p>
+</section>
+
+<div class="meta">
+  <div>
+    <h3>How it was built</h3>
+    <ul>
+      <li>GH Archive, 138 consecutive days, 560,839,725 events</li>
+      <li>Python streams the feed hour by hour into Parquet</li>
+      <li>DuckDB for the analysis, all of it on a laptop</li>
+      <li>GitHub REST API for the validation sample</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Read further</h3>
+    <ul>
+      <li><a href="https://github.com/azadvoryanskiy/github-product-analytics/blob/main/notebooks/01_data_quality.ipynb">The notebook, step by step</a></li>
+      <li><a href="https://github.com/azadvoryanskiy/github-product-analytics/blob/main/docs/01-data-quality.md">The full write-up</a></li>
+      <li><a href="https://github.com/azadvoryanskiy/github-product-analytics/blob/main/docs/data_notes.md">Data notes: what this data can and cannot answer</a></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p><b>Caveats.</b> Public activity only — private repositories are invisible. The
+  rules are thresholds, and thresholds are judgement; the sensitivity is worth
+  checking before the numbers are used for anything. The deletion check is
+  correlation, not proof. The 2026 feed is worse than anything described here, which
+  is why the analysis stops in September 2025.</p>
+  <p>Artem Zadvoryanskiy · Senior Product &amp; Data Analyst ·
+  <a href="https://azadvoryanskiy.github.io">portfolio</a> ·
+  <a href="https://linkedin.com/in/artemzad">LinkedIn</a></p>
+</footer>
+
+</div>
+</body>
+</html>

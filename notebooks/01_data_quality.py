@@ -32,19 +32,15 @@ import pandas as pd
 from scipy import stats
 
 import charts
-from bots import ACCOUNT_DAYS, KIND, PROCESSED
+import figures
 from data import WINDOW_END, WINDOW_START, connect, events
 
-charts.use_style()
+# Drawing lives in src/figures.py so the same code renders the light figures
+# below and the dark ones on the published page. The queries stay here, because
+# the queries are the argument.
+theme = charts.use("light")
 con = connect()
-
-# Every event in the window, and the per-account-per-day table src/bots.py
-# built from it with the automation rules applied.
-events(con, "events_2025-*.parquet", view="ev", window=(WINDOW_START, WINDOW_END))
-con.execute(f"""
-    CREATE OR REPLACE VIEW accounts AS
-    SELECT *, {KIND} AS kind FROM read_parquet('{ACCOUNT_DAYS}/*.parquet')
-""")
+frames = figures.load(con)   # registers the `ev` and `accounts` views too
 print(f"analysis window: {WINDOW_START} to {WINDOW_END}")
 
 # %% [markdown]
@@ -99,24 +95,7 @@ con.sql("""
 # Events per day, across the window.
 
 # %%
-daily = con.sql("""
-    SELECT created_at::DATE AS day, count(*) AS events
-    FROM ev GROUP BY 1 ORDER BY 1
-""").df()
-daily["day"] = pd.to_datetime(daily["day"])
-
-fig, ax = plt.subplots(figsize=(10, 4))
-ax.plot(daily.day, daily.events / 1e6, color=charts.BLUE)
-ax.axvline(pd.Timestamp("2025-05-24"), color=charts.CRITICAL, lw=1.5, ls="--")
-ax.annotate("24 May 2025", xy=(pd.Timestamp("2025-05-24"), 5.9),
-            xytext=(6, 0), textcoords="offset points",
-            color=charts.CRITICAL, fontsize=10, va="top")
-ax.set_ylabel("events per day, millions")
-ax.set_ylim(0, 6.5)
-charts.finish(ax, "Published activity fell 34% overnight and stayed down",
-              "Events per day. The fall lands between Friday 23 and Saturday 24 May 2025.")
-charts.save(fig, "01_daily_events")
-fig
+figures.daily_events(frames["daily"], theme);
 
 # %% [markdown]
 # A 34% fall between a Friday and a Saturday that never comes back.
@@ -161,7 +140,8 @@ con.sql("""
 # the busiest hours, and it will bite hardest exactly when there is most to cut.
 
 # %%
-hourly = con.sql("""
+hourly = frames["hourly"]
+con.sql("""
     WITH h AS (
       SELECT created_at::DATE AS d, hour(created_at) AS hour, count(*) AS n
       FROM ev GROUP BY 1, 2
@@ -170,20 +150,9 @@ hourly = con.sql("""
       avg(CASE WHEN d BETWEEN DATE '2025-05-12' AND DATE '2025-05-23' THEN n END) AS before,
       avg(CASE WHEN d BETWEEN DATE '2025-05-26' AND DATE '2025-06-06' THEN n END) AS after
     FROM h GROUP BY hour ORDER BY hour
-""").df()
+""").df().head(4)
 
-fig, ax = plt.subplots(figsize=(10, 4))
-ax.plot(hourly.hour, hourly.before / 1000, color=charts.BLUE, label="12–23 May")
-ax.plot(hourly.hour, hourly.after / 1000, color=charts.ORANGE, label="26 May – 6 June")
-ax.set_xlabel("hour of day, UTC")
-ax.set_ylabel("events per hour, thousands")
-ax.set_ylim(0, 300)
-ax.set_xticks(range(0, 24, 3))
-ax.legend(loc="lower right")
-charts.finish(ax, "Every hour was clipped, the busiest hours hardest",
-              "Average events per hour, two weekday-matched fortnights either side of 24 May.")
-charts.save(fig, "02_hourly_ceiling")
-fig
+figures.hourly_ceiling(hourly, theme);
 
 # %% [markdown]
 # The line does not drop — it flattens against a lid.
@@ -224,36 +193,16 @@ print(f"peak-to-trough after:  {hourly.after.max() / hourly.after.min():.2f}x")
 # events a day and the 99.9th percentile produces 166.
 
 # %%
-mix = con.sql("""
+mix = frames["mix"]
+con.sql("""
     SELECT kind, sum(events) AS events,
            round(100.0 * sum(events) / sum(sum(events)) OVER (), 1) AS pct
     FROM accounts
     GROUP BY 1 ORDER BY events DESC
 """).df()
-mix
 
 # %%
-order = ["person", "declared bot", "round the clock", "one target, one action"]
-labels = ["People", "Declared bots\n(login ends in [bot])",
-          "Round the clock\n(20+ hours a day)", "One target, one action\n(one type, 1-2 repos)"]
-vals = [float(mix.loc[mix.kind == k, "pct"].iloc[0]) for k in order]
-
-fig, ax = plt.subplots(figsize=(9, 3.8))
-bars = ax.barh(range(len(order)), vals, height=0.62, color=charts.SERIES)
-for i, value in enumerate(vals):
-    # Two of these colours sit below 3:1 on this surface, so the value is
-    # written out rather than left to the colour and the bar length alone.
-    ax.text(value + 1.2, i, f"{value}%", va="center", ha="left",
-            color=charts.INK, fontsize=11, fontweight="semibold")
-ax.set_yticks(range(len(order)))
-ax.set_yticklabels(labels, fontsize=9.5, color=charts.INK_SOFT)
-ax.invert_yaxis()
-ax.set_xlim(0, 72)
-ax.set_xlabel("share of all events, %")
-charts.finish(ax, "37.5% of events are automation, not people",
-              "Filtering on logins that end in [bot] catches 25.3 of those 37.5 points.")
-charts.save(fig, "03_composition")
-fig
+figures.composition(mix, theme);
 
 # %% [markdown]
 # **The standard rule finds two thirds of the problem.** Filtering on `[bot]`
@@ -292,37 +241,11 @@ con.sql("""
 # still exists.
 
 # %%
-val = pd.read_parquet(PROCESSED / "validation.parquet")
-summary = val.groupby("kind").agg(
-    sampled=("actor_id", "size"),
-    gone=("exists", lambda s: int((s == False).sum())),  # noqa: E712
-)
-summary["gone_pct"] = (100 * summary.gone / summary.sampled).round(1)
-ci = summary.apply(
-    lambda r: stats.binomtest(int(r.gone), int(r.sampled)).proportion_ci(method="wilson"),
-    axis=1)
-summary["lo"] = [100 * c.low for c in ci]
-summary["hi"] = [100 * c.high for c in ci]
-summary.loc[order]
+summary = frames["summary"]
+summary.loc[figures.KINDS][["sampled", "gone", "gone_pct", "lo", "hi"]].round(1)
 
 # %%
-s = summary.loc[order]
-fig, ax = plt.subplots(figsize=(9, 3.4))
-y = range(len(order))
-ax.errorbar(s.gone_pct, y, xerr=[s.gone_pct - s.lo, s.hi - s.gone_pct],
-            fmt="o", color=charts.BLUE, ecolor=charts.AXIS, elinewidth=2, capsize=0)
-for i, (rate, hi) in enumerate(zip(s.gone_pct, s.hi)):
-    ax.text(hi + 1.0, i, f"{rate}%", va="center", ha="left",
-            color=charts.INK, fontsize=10.5)
-ax.set_yticks(list(y))
-ax.set_yticklabels([lbl.split("\n")[0] for lbl in labels], color=charts.INK_SOFT)
-ax.invert_yaxis()
-ax.set_xlabel("accounts no longer on GitHub, % (95% confidence interval)")
-ax.set_xlim(0, 40)
-charts.finish(ax, "GitHub removes the flagged accounts far more often",
-              "Share of 150 sampled accounts per rule that no longer exist, with 95% intervals.")
-charts.save(fig, "04_deletion_rates")
-fig
+figures.deletion_rates(summary, theme);
 
 # %%
 for rule in ["round the clock", "one target, one action"]:
