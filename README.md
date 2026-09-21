@@ -13,7 +13,7 @@ The three case studies share one data model, built once:
 | | Question | Page | Write-up |
 |---|---|---|---|
 | 1 | Activity fell a third overnight — did users leave? | [read it](https://azadvoryanskiy.github.io/github-product-analytics/) | [`docs/01-data-quality.md`](docs/01-data-quality.md) |
-| 2 | What happens in a new account's first days, and who comes back? | in progress | `docs/02-activation.md` |
+| 2 | What happens in a new account's first days, and who comes back? | [read it](https://azadvoryanskiy.github.io/github-product-analytics/activation.html) | [`docs/02-activation.md`](docs/02-activation.md) |
 | 3 | Which features do the teams that stay on the product use? | in progress | `docs/03-features.md` |
 
 Start with [`docs/data_notes.md`](docs/data_notes.md): what one row is, what the
@@ -42,6 +42,9 @@ The days each case study uses are listed at the top of its write-up.
 ```
 src/extract.py    download GH Archive, write one Parquet file per day
 src/bots.py       the automation rules
+src/cohort.py     signup weeks as ranges of account id
+src/activation.py the funnel and the per-newcomer feature table
+src/drivers.py    what separates the newcomers who come back
 src/validate.py   check those rules against the GitHub API
 src/figures.py    the charts, in a light and a dark theme
 notebooks/        the analyses, as jupytext .py plus executed .ipynb

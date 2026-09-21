@@ -1,0 +1,76 @@
+:root{
+  color-scheme: dark;
+  --bg:#09090b; --card:#141417; --line:rgba(255,255,255,.08);
+  --ink:#f5f5f4; --ink-2:#a1a1aa; --muted:#71717a;
+  --accent:#ff6a3d; --radius:22px;
+  --head:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(900px 520px at 85% -8%,rgba(255,106,61,.16),transparent 60%),
+             radial-gradient(700px 480px at -10% 30%,rgba(91,156,240,.08),transparent 60%),
+             linear-gradient(var(--bg),var(--bg));}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+nav{display:flex;gap:14px;align-items:center;padding:26px 0 8px;font-size:14px;color:var(--muted)}
+nav a{color:var(--ink-2)}
+h1{font:700 clamp(28px,5vw,44px)/1.12 var(--head);margin:18px 0 14px;letter-spacing:-.02em}
+h2{font:600 clamp(20px,3vw,26px)/1.25 var(--head);margin:0 0 10px;letter-spacing:-.01em}
+.eyebrow{font:600 12px/1 var(--head);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:19px;color:var(--ink-2);margin:0 0 28px}
+.lede strong{color:var(--ink)}
+
+.answer{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px;margin:0 0 22px}
+.answer h2{font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.answer ol{margin:0;padding-left:22px}
+.answer li{margin:0 0 12px;font-size:17px}
+.answer li:last-child{margin-bottom:0}
+.answer li b{color:var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 44px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat .n{font:700 clamp(22px,3.4vw,30px)/1.1 var(--head);letter-spacing:-.02em}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+section{margin:0 0 44px}
+section .num{font:600 13px/1 var(--head);color:var(--accent);letter-spacing:.08em;margin-bottom:8px}
+section p{margin:0 0 14px;color:var(--ink-2)}
+section p strong{color:var(--ink);font-weight:600}
+figure{margin:20px 0 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 6px}
+figure img{width:100%;height:auto;display:block;border-radius:8px}
+figcaption{font-size:13.5px;color:var(--muted);padding:12px 4px 10px}
+
+.callout{background:linear-gradient(180deg,rgba(255,106,61,.10),rgba(255,106,61,.03));
+  border:1px solid rgba(255,106,61,.28);border-radius:var(--radius);padding:24px 26px}
+.callout h2{color:var(--ink)}
+.callout ul{margin:10px 0 0;padding-left:20px}
+.callout li{margin:0 0 12px;color:var(--ink-2)}
+.callout li:last-child{margin-bottom:0}
+.callout li b{color:var(--ink)}
+
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:34px}
+.meta div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.meta h3{font:600 13px/1 var(--head);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.meta p,.meta li{font-size:14.5px;color:var(--ink-2);margin:0 0 8px}
+.meta ul{margin:0;padding-left:18px}
+footer{color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);margin-top:40px;padding-top:20px}
+
+@media (max-width:640px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .meta{grid-template-columns:1fr}
+  figure{padding:12px 12px 2px}
+}
+
+/* Shared by every case-study page. */
+.crumbs{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:26px 0 8px;font-size:14px;color:var(--muted)}
+.crumbs a{color:var(--ink-2)}
+.crumbs a.here{color:var(--accent)}
+table.sizing{width:100%;border-collapse:collapse;margin:14px 0 0;font-size:15px}
+table.sizing th{text-align:left;font:600 12px/1 var(--head);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);padding:0 12px 10px 0}
+table.sizing td{padding:8px 12px 8px 0;border-top:1px solid var(--line);color:var(--ink-2)}
+table.sizing tr.pick td{color:var(--ink);font-weight:600}

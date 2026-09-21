@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The first day decides · GitHub product analytics</title>
+<meta name="description" content="A million people a week open a GitHub account. Two thirds of the ones who do anything never come back. What separates the third that does.">
+<meta name="theme-color" content="#09090b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff6a3d'/%3E%3Ctext x='32' y='42' font-family='system-ui,sans-serif' font-size='27' font-weight='800' fill='%23140a06' text-anchor='middle'%3EAZ%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="case-study.css">
+</head>
+<body>
+<div class="wrap">
+
+<nav class="crumbs">
+  <a href="https://azadvoryanskiy.github.io">← Portfolio</a>
+  <span>·</span>
+  <a href="index.html">Data quality</a>
+  <a class="here" href="activation.html">Activation</a>
+  <span>·</span>
+  <a href="https://github.com/azadvoryanskiy/github-product-analytics">Repository</a>
+</nav>
+
+<p class="eyebrow">Activation · GitHub signups</p>
+<h1>A million people a week open an account. How many come back?</h1>
+<p class="lede"><strong>Of the ones who do anything at all, a third.</strong> What
+separates them is not how eager they were — it is whether they made something,
+and whether a human answered them.</p>
+
+<div class="answer">
+  <h2>The answer in three lines</h2>
+  <ol>
+    <li>The funnel leaks twice: only <b>15% of new accounts do anything public</b>
+        in their first four weeks, and only <b>33% of those come back</b> on a
+        second day. Steady across all nine weekly cohorts.</li>
+    <li><b>Making something brings people back; looking around does not.</b>
+        Pushing code on day one is worth +11.3 points. Starring repositories is
+        worth −8.8 — the strongest negative signal in the data.</li>
+    <li>The one lever that survives every check is <b>getting a reply</b>: worth
+        about ten points in every activity band. Only one newcomer in five who
+        posts something gets one.</li>
+  </ol>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="n">1.5M</div><div class="l">newcomers across nine weekly cohorts</div></div>
+  <div class="stat"><div class="n">33%</div><div class="l">come back on a second day</div></div>
+  <div class="stat"><div class="n">1 in 5</div><div class="l">who post something get any reply</div></div>
+  <div class="stat"><div class="n">216/216</div><div class="l">cohort boundary checks correct</div></div>
+</div>
+
+<section>
+  <div class="num">FIRST</div>
+  <h2>The obvious definition of "newcomer" is wrong by three years</h2>
+  <p>GH Archive records events, not signups — there is no registration date in it
+  anywhere. The obvious substitute is "the first time this account appears". Before
+  building on that, I took 600 accounts that first appeared in one week and asked
+  the API when each was actually created.</p>
+  <p><strong>The median had held the account for 1,040 days.</strong> Only 8% were
+  made that day. "First seen" finds dormant accounts waking up — and nothing
+  downstream would have looked wrong.</p>
+  <figure>
+    <img src="img/dark/05_account_ages.png" alt="Account age when first seen: 57.6% are over two years old, only 8.1% were made that day">
+    <figcaption>600 accounts first seen in one week, checked against the GitHub API.</figcaption>
+  </figure>
+  <p>What works instead: GitHub issues account ids in registration order. Checked on
+  370 accounts across 2025 — sorted by id, <strong>zero</strong> registration dates
+  went backwards. So a week of signups is a range of ids, and each boundary can be
+  found by binary search against the API rather than guessed. Then verified: 12
+  accounts either side of all nine boundaries, <strong>216 of 216 on the correct
+  side</strong>.</p>
+</section>
+
+<section>
+  <div class="num">01</div>
+  <h2>The funnel leaks in two places</h2>
+  <p>One clock for everyone: days since the Monday their account was made.
+  Automation is stripped out first using the rules from the
+  <a href="index.html">data-quality case study</a> — new accounts are exactly where
+  the push farms live.</p>
+  <p>Two definitions worth stating. <strong>28 days, not 30</strong>: returns bump on
+  days 7, 14, 21 and 28, because people come back on the weekday they arrived, so a
+  window that is not whole weeks gives cohorts different numbers of weekends. And
+  <strong>a second day, not a second event</strong>: half of all newcomers fire
+  several events within minutes of their first, which is one sitting, not a return.</p>
+  <figure>
+    <img src="img/dark/06_funnel.png" alt="Funnel: 1,117,927 account ids issued, 169,659 do anything, 56,218 come back">
+    <figcaption>Average of nine weekly signup cohorts, June–July 2025.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="num">02</div>
+  <h2>A third of every effect was just eagerness</h2>
+  <p>Eager newcomers do more of everything and come back more often, so a raw
+  comparison makes every feature look helpful. Each one is therefore run twice:
+  raw, and again inside bands of how much the account did on its first day.</p>
+  <p>Day-one volume alone is strong and monotone — 25.9% come back after one event,
+  56.7% after eleven or more. Once that is held constant, about a third of every gap
+  disappears. <strong>What is left still points one way.</strong></p>
+  <figure>
+    <img src="img/dark/07_driver_gaps.png" alt="Dumbbell chart of raw versus volume-matched gaps for eight day-one actions">
+    <figcaption>Difference in the share who come back, raw and at matched day-one volume.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="num">03</div>
+  <h2>A reply is worth ten points, and four in five never get one</h2>
+  <p>Getting a reply barely shrinks under matching (+13.2 raw, +12.1 matched), which
+  makes sense: how many events you fire is yours to control, whether a stranger
+  answers you is not.</p>
+  <p>Tested only among the 80,152 newcomers who posted something a person
+  <em>could</em> reply to — comparing against everyone else would mostly compare
+  posters with non-posters. Odds ratio 1.39, Fisher exact p = 1.4 × 10⁻⁷⁷.</p>
+  <figure>
+    <img src="img/dark/08_reply_effect.png" alt="Came-back rates with and without a reply, in four bands of day-one activity">
+    <figcaption>The gap holds at every level of day-one activity.</figcaption>
+  </figure>
+</section>
+
+<section class="callout">
+  <h2>What I would change</h2>
+  <ul>
+    <li><b>Route a first-time contributor's first post to a human within 24 hours.</b>
+    They are identifiable the moment they post — GitHub already labels the author as
+    unaffiliated with the repository, and the account id says it is days old.</li>
+    <li><b>Stop counting stars and forks as onboarding progress.</b> They are the
+    strongest negative signal here. A newcomer who has only starred things is not
+    warming up.</li>
+    <li><b>Point the first-run flow at making something.</b> Pushing code on day one
+    is worth +11.3 points and reaches 38% of newcomers — the widest lever in the
+    data.</li>
+  </ul>
+  <p style="margin:18px 0 0;color:var(--ink-2)"><b style="color:var(--ink)">How I
+  would test it:</b> randomise newcomers who post on day one and get no reply within
+  a few hours; treatment surfaces the post to a maintainer. About 7,000 qualify per
+  week, and the baseline is 33.3%. The observed gap is 8–10 points, but it is
+  correlational, so plan for less.</p>
+  <table class="sizing">
+    <tr><th>Effect to detect</th><th>Per arm</th><th>Weeks of newcomers</th></tr>
+    <tr><td>+2 points</td><td>8,843</td><td>2.5</td></tr>
+    <tr class="pick"><td>+3 points</td><td>3,956</td><td>1.1</td></tr>
+    <tr><td>+5 points</td><td>1,442</td><td>0.4</td></tr>
+  </table>
+</section>
+
+<div class="meta">
+  <div>
+    <h3>How it was built</h3>
+    <ul>
+      <li>GH Archive, 103 consecutive days after the May 2025 rate cap</li>
+      <li>Nine weekly signup cohorts, 1,526,935 newcomers</li>
+      <li>Cohorts defined by account id range, verified against the API</li>
+      <li>DuckDB and Python, all of it on a laptop</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Read further</h3>
+    <ul>
+      <li><a href="https://github.com/azadvoryanskiy/github-product-analytics/blob/main/notebooks/02_activation.ipynb">The notebook, step by step</a></li>
+      <li><a href="https://github.com/azadvoryanskiy/github-product-analytics/blob/main/docs/02-activation.md">The full write-up</a></li>
+      <li><a href="index.html">Case study 1: can you trust this data at all?</a></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p><b>Caveats.</b> The reply effect is correlational — a newcomer who posts
+  something interesting is more likely to get a reply <em>and</em> more likely to
+  come back, and the banding removes the volume part of that, not the quality part.
+  That is why the recommendation ends in a test rather than a promised lift. The top
+  of the funnel is an estimate: accounts that sign up and never act are invisible, so
+  id ranges stand in for signups. Public activity only. June and July 2025 only — a
+  September student intake may behave differently.</p>
+  <p>Artem Zadvoryanskiy · Senior Product &amp; Data Analyst ·
+  <a href="https://azadvoryanskiy.github.io">portfolio</a> ·
+  <a href="https://linkedin.com/in/artemzad">LinkedIn</a></p>
+</footer>
+
+</div>
+</body>
+</html>
