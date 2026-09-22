@@ -1,5 +1,7 @@
-# Data is never committed. See README for how to fetch it.
-data/
+# Raw and intermediate data is never committed. See README for how to fetch it.
+# Anchored to the repository root on purpose: docs/data holds the small JSON
+# the dashboard reads, and that has to ship.
+/data/
 *.duckdb
 *.duckdb.wal
 
