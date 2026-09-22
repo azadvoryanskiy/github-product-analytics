@@ -69,6 +69,8 @@ active days in the baseline month — and re-run it.
 | Collaborators | +4.9 | −3.5 |
 | Branches and repos | −0.3 | **−5.9** |
 
+![Raw versus activity-matched retention gaps for eleven features](img/09_matched_collapse.png)
+
 Percentage points of 90-day retention. Pushing code — the thing 62% of accounts
 do — is worth *less than nothing* once you account for how active the person
 was. So is creating repositories and branches. They are what everybody does, so
@@ -87,6 +89,8 @@ in one click why the raw number was not an answer.
 | 3 | 34.8% |
 | 4 | 45.9% |
 | 5 or more | 67.5% |
+
+![90-day retention by number of features used](img/10_breadth.png)
 
 Monotone, and it does not collapse under any cut on the dashboard. Whatever the
 mechanism — people who find more uses for a tool have more reasons to return —
