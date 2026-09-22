@@ -14,7 +14,7 @@ The three case studies share one data model, built once:
 |---|---|---|---|
 | 1 | Activity fell a third overnight — did users leave? | [read it](https://azadvoryanskiy.github.io/github-product-analytics/) | [`docs/01-data-quality.md`](docs/01-data-quality.md) |
 | 2 | What happens in a new account's first days, and who comes back? | [read it](https://azadvoryanskiy.github.io/github-product-analytics/activation.html) | [`docs/02-activation.md`](docs/02-activation.md) |
-| 3 | Which features do the teams that stay on the product use? | in progress | `docs/03-features.md` |
+| 3 | Which features keep people on the platform? | [dashboard](https://azadvoryanskiy.github.io/github-product-analytics/features.html) | [`docs/03-features.md`](docs/03-features.md) |
 
 Start with [`docs/data_notes.md`](docs/data_notes.md): what one row is, what the
 data can answer, and what it cannot.
@@ -45,6 +45,8 @@ src/bots.py       the automation rules
 src/cohort.py     signup weeks as ranges of account id
 src/activation.py the funnel and the per-newcomer feature table
 src/drivers.py    what separates the newcomers who come back
+src/features.py   event types grouped into features, and the retention outcomes
+src/cube.py       every slice the dashboard can show, as one small JSON
 src/validate.py   check those rules against the GitHub API
 src/figures.py    the charts, in a light and a dark theme
 notebooks/        the analyses, as jupytext .py plus executed .ipynb

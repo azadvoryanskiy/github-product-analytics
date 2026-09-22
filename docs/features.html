@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which features keep people? · GitHub product analytics</title>
+<meta name="description" content="Feature usage and 90-day retention for 5.9 million GitHub accounts. Interactive: filter by activity and account age, and switch to a matched comparison.">
+<meta name="theme-color" content="#09090b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff6a3d'/%3E%3Ctext x='32' y='42' font-family='system-ui,sans-serif' font-size='27' font-weight='800' fill='%23140a06' text-anchor='middle'%3EAZ%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="case-study.css">
+<style>
+.wrap.wide{max-width:1180px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.kpi .n{font:700 clamp(21px,3vw,28px)/1.1 var(--head);letter-spacing:-.02em}
+.kpi .l{font-size:12.5px;color:var(--muted);margin-top:5px;line-height:1.4}
+.controls{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:16px 18px;margin:0 0 18px;display:grid;gap:12px}
+.ctl{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.ctl .name{font:600 11px/1 var(--head);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);min-width:118px}
+.pill{border:1px solid var(--line);background:transparent;border-radius:999px;
+  padding:7px 14px;font:500 13.5px/1 var(--body);color:var(--ink-2);cursor:pointer}
+.pill:hover{border-color:var(--line-strong);color:var(--ink)}
+.pill.on{border-color:var(--accent);color:var(--accent)}
+.switch{display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid var(--line);
+  background:transparent;border-radius:999px;padding:7px 14px;color:var(--ink-2);
+  font:500 13.5px/1 var(--body)}
+.switch .sw{width:36px;height:20px;border-radius:999px;background:#3a3a40;position:relative;transition:background .15s}
+.switch .sw::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;
+  border-radius:50%;background:#d4d4d8;transition:transform .15s}
+.switch.on{border-color:var(--accent);color:var(--accent)}
+.switch.on .sw{background:var(--accent)}
+.switch.on .sw::after{transform:translateX(16px);background:#140a06}
+.note{font-size:13px;color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:20px 22px;margin:0 0 16px}
+.panel.key{border-color:rgba(255,106,61,.35)}
+.panel h2{font:600 17px/1.25 var(--head);margin:0 0 4px}
+.panel .hint{font-size:13px;color:var(--muted);margin:0 0 14px;max-width:70ch}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart{width:100%;height:330px}
+.chart.tall{height:420px}
+.rowhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 0 4px}
+button.ghost{background:transparent;border:1px solid var(--line);border-radius:999px;
+  padding:6px 13px;color:var(--ink-2);font:500 13px/1 var(--body);cursor:pointer}
+button.ghost:hover{border-color:var(--accent);color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font:600 11px/1 var(--head);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);padding:0 12px 10px 0;white-space:nowrap}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--ink-2)}
+th.on{color:var(--accent)}
+td{padding:8px 12px 8px 0;border-top:1px solid var(--line);color:var(--ink-2);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+td.name{color:var(--ink)}
+td.up{color:#0ca30c}
+td.down{color:#e66767}
+.scroll{overflow-x:auto}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
+  .ctl .name{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap wide">
+
+<nav class="crumbs">
+  <a href="https://azadvoryanskiy.github.io">← Portfolio</a>
+  <span>·</span>
+  <a href="index.html">Data quality</a>
+  <a href="activation.html">Activation</a>
+  <a class="here" href="features.html">Feature usage</a>
+  <span>·</span>
+  <a href="https://github.com/azadvoryanskiy/github-product-analytics">Repository</a>
+</nav>
+
+<p class="eyebrow">Feature usage · retention</p>
+<h1>Which features keep people on the platform?</h1>
+<p class="lede"><strong>Almost none of them on their own.</strong> Every feature
+looks like it helps until you compare people who were active the same number of
+days — then most of the gaps collapse, and two of them turn negative. What
+survives is <em>how many</em> features someone uses, not which.</p>
+
+<div class="answer">
+  <h2>How to read this</h2>
+  <ol>
+    <li>Everyone active on GitHub between <span id="period">…</span>, followed for
+        30, 60 and 90 days. Automation removed.</li>
+    <li><b>Turn on "compare at equal activity"</b> — that is the whole point of the
+        page. Code review goes from +39 points to +12.8; pushing code goes from
+        +11.5 to <b>−2.7</b>.</li>
+    <li>Click any feature to follow it across every chart. Every number is in the
+        table at the bottom, and it downloads as CSV.</li>
+  </ol>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="n" id="kpi-accounts">—</div><div class="l">accounts in the baseline month</div></div>
+  <div class="kpi"><div class="n" id="kpi-features">—</div><div class="l">product features tracked</div></div>
+  <div class="kpi"><div class="n" id="kpi-retention">—</div><div class="l" id="kpi-retention-label">still active</div></div>
+  <div class="kpi"><div class="n" id="kpi-mean">—</div><div class="l">features used per account, mean</div></div>
+</div>
+
+<div class="controls">
+  <div class="ctl"><span class="name">Active days</span><span id="filter-bands"></span></div>
+  <div class="ctl"><span class="name">Account age</span><span id="filter-ages"></span></div>
+  <div class="ctl"><span class="name">Retention at</span><span id="filter-horizon"></span></div>
+  <div class="ctl">
+    <span class="name">Comparison</span>
+    <button class="switch" id="matched"><span class="sw"></span>Compare at equal activity</button>
+    <span class="note" id="matched-note"></span>
+  </div>
+</div>
+
+<div class="panel key">
+  <div class="rowhead">
+    <h2>Retention by feature</h2>
+    <button class="ghost" id="clear-highlight" hidden></button>
+  </div>
+  <p class="hint">Share still active at the chosen horizon: people who used the
+  feature in the baseline month against everyone else. The number on the right is
+  the gap. Switch the comparison above and watch most of them fall.</p>
+  <div class="chart tall" id="chart-retention"></div>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <h2>How many people use each feature</h2>
+    <p class="hint">Share of the selected accounts that used it at least once in the
+    baseline month.</p>
+    <div class="chart" id="chart-adoption"></div>
+  </div>
+  <div class="panel">
+    <h2>How heavily they use it</h2>
+    <p class="hint">Events per active day among people who use the feature at all —
+    the dot is the median, the bar is the middle half. Separates "tried it once"
+    from "lives in it".</p>
+    <div class="chart" id="chart-frequency"></div>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="panel">
+    <h2>Breadth beats any single feature</h2>
+    <p class="hint">Retention by how many different features the account used in the
+    baseline month. This is the one relationship that does not collapse.</p>
+    <div class="chart" id="chart-curves"></div>
+  </div>
+  <div class="panel">
+    <h2>Which pairs are worth more than their parts</h2>
+    <p class="hint">90-day retention when both features are used, against the better
+    of the two used alone. Unmatched, so read it as where to look, not as an effect
+    size.</p>
+    <div class="scroll" id="pairs"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="rowhead">
+    <h2>Every number on this page</h2>
+    <button class="ghost" id="csv">Download CSV</button>
+  </div>
+  <p class="hint">Click a column to sort. Nobody should have to read a value off a
+  bar.</p>
+  <div class="scroll" id="table"></div>
+</div>
+
+<section class="callout">
+  <h2>What I would change</h2>
+  <ul>
+    <li><b>Stop asking which feature to push.</b> Once activity is held constant, no
+    single feature is worth more than about thirteen points, and two of the widest
+    ones — pushing code and creating repositories — go <em>negative</em>. They are
+    what everybody does, so using them says nothing.</li>
+    <li><b>Aim at the second and third feature instead.</b> Accounts using one
+    feature retain at 19.5%; at five, 67.5%. Breadth is the relationship that
+    survives every cut on this page.</li>
+    <li><b>Code review is the one worth a real try.</b> +12.8 points matched, the
+    largest of any single feature, and only 3.4% of accounts touch it — the widest
+    gap between value and reach.</li>
+  </ul>
+  <p style="margin:18px 0 0;color:var(--ink-2)"><b style="color:var(--ink)">How I
+  would test it:</b> take accounts that have used exactly one feature for a month
+  and prompt the second — a review request, a first issue, a release. Outcome is
+  90-day retention against a held-out control. The matched gaps here are
+  correlational and set the ceiling, not the expectation.</p>
+</section>
+
+<div class="meta">
+  <div>
+    <h3>How it was built</h3>
+    <ul>
+      <li>GH Archive, baseline month <span id="period2"></span></li>
+      <li>5.9M accounts, automation removed by the rules from case study 1</li>
+      <li>Retention checked over a fortnight, not a single day</li>
+      <li>All slices precomputed to a 158&nbsp;KB JSON; no server behind this page</li>
+    </ul>
+  </div>
+  <div>
+    <h3>Read further</h3>
+    <ul>
+      <li><a href="https://github.com/azadvoryanskiy/github-product-analytics/blob/main/docs/03-features.md">The full write-up</a></li>
+      <li><a href="index.html">Case study 1: can you trust this data at all?</a></li>
+      <li><a href="activation.html">Case study 2: what happens on day one</a></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p><b>Caveats.</b> Matching on active days removes the crudest confounder, not
+  every one — people who review code differ from people who do not in ways this data
+  cannot see. Public activity only. Discussions is absent because GitHub did not
+  publish those events until after this window, which would have read as "nobody
+  uses it". Accounts are not people: one person may hold several.</p>
+  <p>Artem Zadvoryanskiy · Senior Product &amp; Data Analyst ·
+  <a href="https://azadvoryanskiy.github.io">portfolio</a> ·
+  <a href="https://linkedin.com/in/artemzad">LinkedIn</a></p>
+</footer>
+
+</div>
+<script src="vendor/echarts.min.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
